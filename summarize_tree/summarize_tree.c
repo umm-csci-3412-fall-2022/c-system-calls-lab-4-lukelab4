@@ -61,9 +61,9 @@ void process_directory(const char* path) {
 	}
 	closedir(dir);
 
-	int chdir_error = chdir("..");
-	if(chdir_error != 0){
-		fprintf(stderr, "An error has occurred.\n", path);
+	int second_chdir_error = chdir("..");
+	if(second_chdir_error != 0){
+		fprintf(stderr, "Path: %s\n", path);
 		exit(1);
 	}
 }
