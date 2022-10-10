@@ -6,8 +6,8 @@
 
 //A method that checks if a character is a vowel
 bool is_vowel(char c) {
-	char c = tolower(c);
-	if(c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u'){
+	char lower = tolower(c);
+	if(lower == 'a' || lower == 'e' || lower == 'i' || lower == 'o' || lower == 'u'){
 		return true;
 	}
 	return false;
@@ -29,7 +29,7 @@ int copy_non_vowels(int num, char* in_buf, char* out_buf){
 void disemvowel(FILE* inputFile, FILE* outputFile){
 	char in[BUF_SIZE];
 	char out[BUF_SIZE];
-	while(!feof(input)){
+	while(!feof(inputFile)){
 		int num_chars = fread(in, sizeof(char), BUF_SIZE, inputFile);
 		int non_vowel = copy_non_vowels(num_chars, in, out);
 		fwrite(out, sizeof(char), non_vowel, outputFile);
@@ -46,11 +46,11 @@ int main(int argc, char *argv[]){
 		inputFile = fopen(argv[1], "r");
 		outputFile = fopen(argv[2], "w");
 	} else if(argc > 3){
-		fprintf(stderr);
+		fprintf(stderr, "An error has occurred.");
 		exit(1);
 	}
 	if(inputFile == NULL || outputFile == NULL){
-		fprintf(stderr);
+		fprintf(stderr, "An error has occurred.");
 		exit(1);
 	}
 	disemvowel(inputFile, outputFile);
