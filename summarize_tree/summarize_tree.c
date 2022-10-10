@@ -5,6 +5,7 @@
 #include <dirent.h>
 #include <unistd.h>
 #include <string.h>
+#include <errno.h>
 
 static int num_dirs, num_regular;
 
@@ -16,6 +17,13 @@ bool is_dir(const char* path) {
    * return value from stat() in case there is a problem, e.g., maybe the
    * the file doesn't actually exist.
    */
+	struct stat buf;
+	int stat_error = stat(path, &buf);
+	if(stat_error == 0) {
+		return S_ISDIR(buf.st_mode);
+	}
+	fprintf(stderr, "An error has occurred.\n");
+	exit(1);
 }
 
 /* 
@@ -36,6 +44,28 @@ void process_directory(const char* path) {
    * with a matching call to chdir() to move back out of it when you're
    * done.
    */
+	num_dirs++;
+	int chdir_error = chdir(path);
+	if(chdir_error != 0){
+		perror("An error has occurred\n");
+		fprintf(stderr, "Path: %s\n", path);
+		exit(1);
+	}
+	DIR *dir = opendir(".");
+	struct dirent *child;
+	while((child = readdir(dir)) != NULL){
+		if(strcmp(child->d_name, "..") == 0 || strcmp(child->d_name, ".") == 0){
+			continue;
+		}
+		process_path(child->d_name);
+	}
+	closedir(dir);
+
+	int chdir_error = chdir("..");
+	if(chdir_error != 0){
+		fprintf(stderr, "An error has occurred.\n", path);
+		exit(1);
+	}
 }
 
 void process_file(const char* path) {
@@ -43,6 +73,7 @@ void process_file(const char* path) {
    * Update the number of regular files.
    * This is as simple as it seems. :-)
    */
+	num_regular++;
 }
 
 void process_path(const char* path) {
